@@ -1,2 +1,2 @@
 # App-de-Gestor-de-turnos
-Aplicacion movil en desarrollo dirigido a publico de emprendedores del nicho de estetica y belleza
+Aplicacion movil en desarrollo dirigido a publico de emprendedores en principio del nicho de estetica y belleza y luego a mas campos.
