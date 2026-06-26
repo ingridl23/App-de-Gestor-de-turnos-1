@@ -1,0 +1,14 @@
+export function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
+export function slugWithSuffix(slug: string, suffix: number): string {
+  return `${slug}-${suffix}`;
+}
