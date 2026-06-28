@@ -179,8 +179,24 @@ export default function PublicBusinessProfile() {
       );
       return;
     }
-    // cliente → flujo de reserva (US-009)
     router.push(`/b/${slug}/book` as never);
+  };
+
+  const handleChatear = () => {
+    if (!session) {
+      setShowAuthModal(true);
+      return;
+    }
+    const role = session.user.user_metadata?.role;
+    if (role === 'emprendedor') {
+      Alert.alert(
+        'Cuenta de emprendedor',
+        'Para chatear como cliente necesitás iniciar sesión con una cuenta de cliente.',
+        [{ text: 'Entendido' }]
+      );
+      return;
+    }
+    router.push(`/b/${slug}/chat` as never);
   };
 
   // ── Loading ────────────────────────────────────────────────────────────
@@ -366,10 +382,16 @@ export default function PublicBusinessProfile() {
       </ScrollView>
 
       {/* ── CTA sticky ──────────────────────────────────────────── */}
-      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 pt-3 pb-6">
+      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 pt-3 pb-6 flex-row gap-2">
+        <Pressable
+          onPress={handleChatear}
+          className="flex-1 border border-gray-200 rounded-2xl py-4 items-center active:opacity-80"
+        >
+          <Text className="text-gray-700 font-semibold text-base">Chatear</Text>
+        </Pressable>
         <Pressable
           onPress={handleReservar}
-          className="bg-blue-500 rounded-2xl py-4 items-center active:opacity-80"
+          className="flex-1 bg-blue-500 rounded-2xl py-4 items-center active:opacity-80"
         >
           <Text className="text-white font-semibold text-base">Reservar turno</Text>
         </Pressable>
