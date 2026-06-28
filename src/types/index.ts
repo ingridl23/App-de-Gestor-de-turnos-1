@@ -84,4 +84,6 @@ export interface NotificationPrefs {
   nueva_reserva: boolean;
   cancelacion: boolean;
   nuevo_mensaje: boolean;
+  recordatorio_push: boolean;
+  recordatorio_whatsapp: boolean;
 }

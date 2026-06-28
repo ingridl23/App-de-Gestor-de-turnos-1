@@ -24,7 +24,7 @@ interface NotificationStore {
 export const useNotificationStore = create<NotificationStore>((set, get) => ({
   notifications: [],
   unreadCount: 0,
-  prefs: { nueva_reserva: true, cancelacion: true, nuevo_mensaje: true },
+  prefs: { nueva_reserva: true, cancelacion: true, nuevo_mensaje: true, recordatorio_push: true, recordatorio_whatsapp: true },
   isLoading: false,
 
   fetchNotifications: async (userId) => {
