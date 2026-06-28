@@ -70,7 +70,8 @@ export default function TabsLayout() {
           tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
         }}
       />
-      {/* Ocultar pantallas residuales */}
+      {/* Ocultar pantallas sin tab visible */}
+      <Tabs.Screen name="payments" options={{ href: null }} />
       <Tabs.Screen name="explore" options={{ href: null }} />
     </Tabs>
   );

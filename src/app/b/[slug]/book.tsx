@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { createMPPreference } from '@/lib/mercadopago';
 import { supabase } from '@/lib/supabase';
 import type { Business, Service } from '@/types';
 
@@ -309,7 +311,7 @@ export default function BookScreen() {
       minutesToStr(parseTime(selectedTime) + totalDuration)
     );
 
-    const { error } = await supabase.rpc('create_appointment', {
+    const { data: appointmentId, error } = await supabase.rpc('create_appointment', {
       p_business_id: business.id,
       p_service_ids: [...selectedServiceIds],
       p_starts_at: startsAt,
@@ -317,9 +319,8 @@ export default function BookScreen() {
       p_amount: totalPrice,
     });
 
-    setSubmitting(false);
-
     if (error) {
+      setSubmitting(false);
       setSubmitError(
         error.message.includes('SLOT_TAKEN')
           ? 'El horario ya fue reservado. Por favor elegí otro horario.'
@@ -328,6 +329,17 @@ export default function BookScreen() {
       return;
     }
 
+    // Si el negocio tiene cobro digital activo, abrir Checkout Pro
+    if (business.payment_mode !== 'none' && business.mp_user_id && appointmentId) {
+      try {
+        const { initPoint } = await createMPPreference(appointmentId as string);
+        await WebBrowser.openAuthSessionAsync(initPoint, 'appdegestordeturnos1://payment');
+      } catch {
+        // Si falla el pago, el turno igual quedó guardado (status: pendiente)
+      }
+    }
+
+    setSubmitting(false);
     setBookedStartsAt(startsAt);
     setBookedEndsAt(endsAt);
   }

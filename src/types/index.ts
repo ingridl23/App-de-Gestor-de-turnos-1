@@ -2,6 +2,8 @@ export type UserRole = 'emprendedor' | 'cliente';
 
 export type BusinessCategory = 'peluqueria' | 'barberia';
 
+export type PaymentMode = 'none' | 'seña' | 'full';
+
 export interface AppUser {
   id: string;
   email: string;
@@ -24,7 +26,24 @@ export interface Business {
   phone?: string;
   avatar_url?: string;
   break_minutes: number;
+  payment_mode: PaymentMode;
+  seña_percent: number;
+  mp_user_id?: string | null;
   created_at: string;
+}
+
+export type PaymentStatus = 'pending' | 'approved' | 'rejected' | 'refunded' | 'cancelled';
+
+export interface Payment {
+  id: string;
+  appointment_id: string;
+  mp_payment_id: string | null;
+  mp_preference_id: string | null;
+  amount: number;
+  status: PaymentStatus;
+  payer_email: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Service {
