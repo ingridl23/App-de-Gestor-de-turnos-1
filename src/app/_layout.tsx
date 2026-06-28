@@ -36,12 +36,11 @@ function useProtectedRoute() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Cuando cambia la sesión: carga el negocio si es emprendedor + registra push token
+  // Cuando cambia la sesión: carga datos según rol
   useEffect(() => {
     const role = session?.user.user_metadata?.role;
     if (session && role === 'emprendedor') {
       fetchBusiness(session.user.id);
-      // Registro de push token y notificaciones (best-effort, no bloquea)
       registerPushToken(session.user.id);
       fetchNotifications(session.user.id);
       fetchPrefs(session.user.id);
@@ -51,23 +50,34 @@ function useProtectedRoute() {
     }
   }, [session?.user.id]);
 
-  // Lógica de redirección basada en auth + estado del negocio
+  // Redirección basada en auth + rol + estado del negocio
   useEffect(() => {
     if (isLoading || isLoadingBusiness) return;
 
-    const inAuthGroup = segments[0] === '(auth)';
-    const inTabsGroup = segments[0] === '(tabs)';
+    const inAuthGroup       = segments[0] === '(auth)';
+    const inTabsGroup       = segments[0] === '(tabs)';
+    const inClientTabsGroup = segments[0] === '(client-tabs)';
     const inOnboardingGroup = segments[0] === '(onboarding)';
-    const isPublicRoute = segments[0] === 'b';
-    const isEmprendedor = session?.user.user_metadata?.role === 'emprendedor';
+    const isPublicRoute     = segments[0] === 'b';
+    const isEmprendedor     = session?.user.user_metadata?.role === 'emprendedor';
 
     if (!session) {
       if (!inAuthGroup && !isPublicRoute) router.replace('/(auth)/login');
-    } else if (isEmprendedor && !business) {
-      if (!inOnboardingGroup) router.replace('/(onboarding)/business-profile');
+      return;
+    }
+
+    if (isEmprendedor) {
+      if (!business) {
+        if (!inOnboardingGroup) router.replace('/(onboarding)/business-profile');
+      } else {
+        if (!inTabsGroup && !inOnboardingGroup && !isPublicRoute) {
+          router.replace('/(tabs)');
+        }
+      }
     } else {
-      if (!inTabsGroup && !inOnboardingGroup && !isPublicRoute) {
-        router.replace('/(tabs)');
+      // cliente
+      if (!inClientTabsGroup && !isPublicRoute) {
+        router.replace('/(client-tabs)');
       }
     }
   }, [session, segments, isLoading, business, isLoadingBusiness]);
