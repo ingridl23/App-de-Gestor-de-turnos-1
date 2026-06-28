@@ -1,6 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
+import { useNotificationStore } from '@/store/notificationStore';
+
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
 function tabIcon(name: IoniconsName, focused: boolean, color: string) {
@@ -14,6 +16,8 @@ function tabIcon(name: IoniconsName, focused: boolean, color: string) {
 }
 
 export default function TabsLayout() {
+  const unreadCount = useNotificationStore((s) => s.unreadCount);
+
   return (
     <Tabs
       screenOptions={{
@@ -31,6 +35,13 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="agenda"
+        options={{
+          title: 'Turnos',
+          tabBarIcon: ({ focused, color }) => tabIcon('calendar', focused, color),
+        }}
+      />
+      <Tabs.Screen
         name="services"
         options={{
           title: 'Servicios',
@@ -40,17 +51,20 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="schedule"
         options={{
-          title: 'Agenda',
-          tabBarIcon: ({ focused, color }) => tabIcon('calendar', focused, color),
+          title: 'Horarios',
+          tabBarIcon: ({ focused, color }) => tabIcon('time', focused, color),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="notifications"
         options={{
-          title: 'Explorar',
-          tabBarIcon: ({ focused, color }) => tabIcon('compass', focused, color),
+          title: 'Avisos',
+          tabBarIcon: ({ focused, color }) => tabIcon('notifications', focused, color),
+          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
         }}
       />
+      {/* Ocultar pantallas residuales */}
+      <Tabs.Screen name="explore" options={{ href: null }} />
     </Tabs>
   );
 }

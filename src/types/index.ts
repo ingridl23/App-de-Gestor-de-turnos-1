@@ -8,6 +8,8 @@ export interface AppUser {
   role: UserRole;
   full_name: string;
   avatar_url?: string;
+  push_token?: string;
+  notification_prefs?: NotificationPrefs;
   created_at: string;
 }
 
@@ -36,12 +38,50 @@ export interface Service {
   created_at: string;
 }
 
+export type AppointmentStatus = 'pendiente' | 'confirmado' | 'cancelado' | 'completado';
+
 export interface Appointment {
   id: string;
   business_id: string;
-  client_id: string;
+  client_id: string | null;
+  client_name: string | null;
+  client_phone: string | null;
   starts_at: string;
   ends_at: string;
-  status: 'pendiente' | 'confirmado' | 'cancelado' | 'completado';
+  status: AppointmentStatus;
+  amount: number;
+  is_manual: boolean;
+  notes: string | null;
   created_at: string;
+}
+
+export interface AppointmentWithDetails extends Appointment {
+  client: Pick<AppUser, 'id' | 'full_name' | 'avatar_url'> | null;
+  appointment_services: Array<{
+    service_id: string;
+    services: Service;
+  }>;
+}
+
+export type NotificationType =
+  | 'recordatorio'
+  | 'confirmacion'
+  | 'cancelacion'
+  | 'mensaje'
+  | 'pago';
+
+export interface AppNotification {
+  id: string;
+  user_id: string;
+  title: string;
+  body: string;
+  type: NotificationType;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface NotificationPrefs {
+  nueva_reserva: boolean;
+  cancelacion: boolean;
+  nuevo_mensaje: boolean;
 }
